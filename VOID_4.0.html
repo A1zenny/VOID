@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#05030b">
+<title>VOID 4.0 — Enter the Unknown</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root{--bg:#05030b;--panel:rgba(18,13,30,.78);--line:rgba(190,145,255,.2);--purple:#a66bff;--pink:#ed9cff;--muted:#a39ab3;--mono:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{min-height:100vh;overflow-x:hidden;background:var(--bg);color:#f8f5ff;font-family:Inter,Arial,sans-serif}button,a{font:inherit}button{color:inherit}::selection{background:#a66bff;color:#fff}
+#progress{position:fixed;z-index:120;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,#7e4bff,#efa4ff);box-shadow:0 0 14px #ad75ff}
+#loader{position:fixed;inset:0;z-index:300;background:#05030b;display:grid;place-items:center;transition:opacity .7s,visibility .7s}#loader.done{opacity:0;visibility:hidden}.loader-inner{text-align:center}.loader-orbit{width:72px;height:72px;margin:0 auto 22px;border:1px solid #8854ce;border-right-color:transparent;border-radius:50%;box-shadow:0 0 25px #8d4dff55;animation:spin 1.1s linear infinite}.loader-core{position:absolute;width:18px;height:18px;margin:27px;border-radius:50%;background:#d9b3ff;box-shadow:0 0 25px #a56aff}.loader-inner p{font:11px var(--mono);letter-spacing:3px;color:#c6a3ff}@keyframes spin{to{transform:rotate(360deg)}}
+body:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(ellipse at 72% 28%,#51258a30,transparent 42%),radial-gradient(ellipse at 10% 85%,#263a8522,transparent 44%)}
+#cursor-glow{position:fixed;z-index:-1;pointer-events:none;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#9a62ff12,transparent 68%);transform:translate(-50%,-50%)}
+nav{height:76px;padding:0 max(5vw,22px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #fff1;background:#080610b8;backdrop-filter:blur(18px);position:sticky;top:0;z-index:90}.brand{display:flex;align-items:center;gap:11px;font-size:19px;font-weight:900;letter-spacing:5px;cursor:pointer;user-select:none}.brand-mark{width:29px;height:29px;border:1px solid #d2aaff;border-radius:50%;position:relative;box-shadow:0 0 18px #9454ff88,inset 0 0 12px #9454ff66}.brand-mark:after{content:"";position:absolute;inset:7px;border-radius:50%;background:#05030b;box-shadow:0 0 9px #d29cff}.navlinks{display:flex;gap:27px}.navlinks a{font:10px var(--mono);letter-spacing:1.5px;color:#aaa0ba;text-decoration:none;transition:.2s}.navlinks a:hover{color:#fff;text-shadow:0 0 15px #c99bff}.navtools{display:flex;gap:8px}.mini-btn{border:1px solid var(--line);background:#ffffff08;border-radius:8px;padding:9px 11px;color:#cdb6ed;font:10px var(--mono);letter-spacing:.5px;cursor:pointer;transition:.2s}.mini-btn:hover,.mini-btn.active{border-color:#b98aff;background:#9d65ff20;color:#fff}
+.hero{position:relative;max-width:1320px;min-height:680px;margin:auto;padding:80px 5vw 65px;display:grid;grid-template-columns:.95fr 1.05fr;align-items:center;gap:15px}.hero-copy{position:relative;z-index:3}.eyebrow{font:11px var(--mono);letter-spacing:3px;color:#c9a5ff;margin-bottom:24px}.eyebrow:before{content:"";display:inline-block;width:22px;height:1px;background:#bb8aff;vertical-align:middle;margin-right:10px;box-shadow:0 0 8px #b58aff}.hero h1{font-size:clamp(54px,7.4vw,100px);font-weight:900;line-height:.91;letter-spacing:-6px}.gradient{color:transparent;background:linear-gradient(100deg,#a66bff,#f0a5ff,#87a5ff,#a66bff);background-size:240% auto;background-clip:text;-webkit-background-clip:text;animation:shine 8s linear infinite}@keyframes shine{to{background-position:240% center}}.hero-desc{max-width:450px;color:var(--muted);font-size:14px;line-height:1.95;margin-top:27px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border:1px solid var(--line);border-radius:9px;padding:14px 20px;font-size:11px;font-weight:800;letter-spacing:1px;cursor:pointer;transition:.25s}.btn-primary{background:linear-gradient(110deg,#713bd1,#a36aff);box-shadow:0 0 28px #9858ff35}.btn-primary:hover{transform:translateY(-4px);box-shadow:0 0 35px #9858ff88}.btn-ghost{background:#ffffff08;color:#e4d5fa}.btn-ghost:hover{transform:translateY(-3px);border-color:#bd91ff;background:#a46cff18}.hero-foot{margin-top:50px;color:#726984;font:9px var(--mono);letter-spacing:2px}.stage{height:510px;position:relative;min-width:0;touch-action:pan-y}.stage canvas{width:100%;height:100%;display:block;outline:none}.stage-hud{position:absolute;left:4%;top:8%;z-index:2;pointer-events:none;font:9px var(--mono);letter-spacing:2px;color:#a995c4}.stage-hud span{display:block;margin-top:7px;color:#756b86;font-size:8px}.stage-coords{position:absolute;right:5%;bottom:7%;font:9px var(--mono);letter-spacing:2px;color:#a995c4;pointer-events:none}.drag-hint{position:absolute;bottom:7%;left:5%;font:9px var(--mono);letter-spacing:1px;color:#756b86;pointer-events:none}
+.stats{max-width:1050px;margin:0 auto;padding:0 22px;display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.stat{padding:23px 10px;text-align:center;border:1px solid var(--line);border-radius:13px;background:linear-gradient(145deg,#21163299,#0d0a1699);backdrop-filter:blur(15px);transition:.25s}.stat:hover{transform:translateY(-4px);border-color:#ad7bff;box-shadow:0 12px 35px #8046cc20}.stat strong{display:block;color:#d0adff;font-size:25px;margin-bottom:7px}.stat span{font:9px var(--mono);letter-spacing:1.5px;color:#91869f}
+.tools{max-width:1120px;margin:auto;padding:115px 24px 100px}.section-head{text-align:center;margin-bottom:42px}.section-head .eyebrow{margin-bottom:14px}.section-head h2{font-size:clamp(30px,4.5vw,48px);letter-spacing:-2px}.section-head p{font-size:13px;color:var(--muted);margin-top:12px}.tool-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{position:relative;isolation:isolate;overflow:hidden;min-height:255px;padding:27px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#20182fcb,#0d0a16e8);backdrop-filter:blur(15px);transition:transform .35s,border-color .35s,box-shadow .35s}.card:before{content:"";position:absolute;z-index:-1;right:-70px;top:-100px;width:210px;height:210px;border-radius:50%;background:#9859ff;filter:blur(95px);opacity:0;transition:.35s}.card:hover{transform:translateY(-6px);border-color:#b58aff99;box-shadow:0 18px 45px #7935bd20}.card:hover:before{opacity:.35}.icon{font-size:27px;color:#d0a9ff;margin-bottom:15px;display:inline-block;transition:.3s}.card:hover .icon{transform:rotate(12deg) scale(1.15);text-shadow:0 0 18px #a76aff}.card h3{font-size:17px;margin-bottom:7px}.card>p{color:#9d93ad;font-size:12px}.result{min-height:43px;margin:22px 0 16px;color:#ddc8ff;font-size:14px;font-weight:600;line-height:1.6;overflow-wrap:anywhere}.result.flash{animation:flash .35s ease}@keyframes flash{50%{opacity:.15;transform:scale(.97)}}.tool-btn{background:#9b63ff1c;border:1px solid #a878ff66;color:#ddc8ff;border-radius:8px;padding:11px 16px;font:10px var(--mono);letter-spacing:1px;cursor:pointer;transition:.2s}.tool-btn:hover{background:#8850dc;color:white;box-shadow:0 0 20px #9858ff55;transform:translateY(-2px)}.number-input{width:77px;padding:10px;background:#080610;border:1px solid #5b4b70;border-radius:7px;color:#fff;outline:none;margin-right:5px}.number-input:focus{border-color:#c49aff;box-shadow:0 0 10px #9858ff66}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .75s,transform .75s}.reveal.visible{opacity:1;transform:translateY(0)}footer{border-top:1px solid #fff1;padding:34px 20px;text-align:center;color:#81768e;font:9px var(--mono);letter-spacing:2px}footer span{color:#c5a0ff}
+#warp{position:fixed;inset:0;z-index:250;display:grid;place-items:center;background:radial-gradient(circle,#34175c 0%,#090511 35%,#020106 100%);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;overflow:hidden}#warp.active{opacity:1;visibility:visible}#warp:before,#warp:after{content:"";position:absolute;width:min(70vw,600px);aspect-ratio:1;border:1px solid #d2a0ff88;border-radius:50%;box-shadow:0 0 25px #a366ff66,inset 0 0 28px #a366ff44;animation:warpSpin .65s linear infinite}#warp:after{width:min(48vw,410px);border-color:#fff9;animation-direction:reverse;animation-duration:.4s}.warp-text{z-index:2;text-align:center;font:11px var(--mono);letter-spacing:4px;color:#f0dcff;text-shadow:0 0 15px #c28aff}.warp-text small{display:block;margin-top:12px;font-size:8px;color:#aa8dc9}@keyframes warpSpin{to{transform:rotate(360deg) scale(.72)}}
+#toast{position:fixed;z-index:280;left:50%;bottom:26px;transform:translate(-50%,25px);opacity:0;padding:13px 18px;border:1px solid #ba8bff66;border-radius:9px;background:#160e25ee;color:#e8d8ff;font:10px var(--mono);letter-spacing:1px;transition:.3s;pointer-events:none;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}#toast.show{opacity:1;transform:translate(-50%,0)}.secret-mode{filter:hue-rotate(70deg)}
+@media(max-width:800px){nav{padding:0 18px}.navlinks{gap:13px}.navlinks a{font-size:9px}.hero{grid-template-columns:1fr;padding:65px 24px 35px;text-align:center;gap:0}.hero h1{letter-spacing:-3px}.hero-desc{margin:22px auto 0}.hero-actions{justify-content:center}.hero-foot{margin-top:30px}.stage{height:390px;max-width:620px;width:100%;margin:0 auto}.stage-hud{text-align:left}.tools{padding-top:90px}}
+@media(max-width:520px){.brand{font-size:16px;letter-spacing:3px}.brand-mark{width:25px;height:25px}.navlinks{gap:10px}.navlinks a{font-size:8px;letter-spacing:.5px}.navtools{gap:5px}.mini-btn{padding:8px 7px;font-size:8px}.tool-grid{grid-template-columns:1fr}.stats{gap:7px;padding:0 13px}.stat{padding:16px 4px}.stat strong{font-size:20px}.stat span{font-size:7px;letter-spacing:.7px}.stage{height:340px}.hero h1{font-size:59px}.hero-desc{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js"}}
+</script>
+</head>
+<body>
+<div id="progress"></div><div id="cursor-glow"></div>
+<div id="loader"><div class="loader-inner"><div class="loader-orbit"><div class="loader-core"></div></div><p>INITIALIZING THE VOID</p></div></div>
+<nav>
+  <div class="brand" id="brand"><div class="brand-mark"></div>VOID</div>
+  <div class="navlinks"><a href="#home">HOME</a><a href="#tools">PORTALS</a></div>
+  <div class="navtools"><button class="mini-btn" id="soundBtn" type="button">SOUND: OFF</button><button class="mini-btn" id="qualityBtn" type="button">LOW FX: OFF</button></div>
+</nav>
+<main>
+<section class="hero" id="home">
+  <div class="hero-copy">
+    <div class="eyebrow">A DIGITAL UNIVERSE // 04.0</div>
+    <h1>BEYOND<br>THE <span class="gradient">VOID.</span></h1>
+    <p class="hero-desc">A strange little corner of the internet. Explore a 3D black hole, discover random things, and see where the next portal takes you.</p>
+    <div class="hero-actions"><a class="btn btn-primary" href="#tools">EXPLORE THE PORTALS ↗</a><button class="btn btn-ghost" id="surpriseBtn" type="button">SURPRISE ME</button></div>
+    <div class="hero-foot">DRAG TO ROTATE // SCROLL TO EXPLORE</div>
+  </div>
+  <div class="stage" id="stage">
+    <div class="stage-hud">GRAVITY WELL // 001<span>INTERACTIVE 3D SIMULATION</span></div>
+    <div class="stage-coords">X: <b id="coordX">000</b> // Y: <b id="coordY">000</b></div>
+    <div class="drag-hint">CLICK + DRAG TO ORBIT</div>
+  </div>
+</section>
+<section class="stats reveal">
+  <div class="stat"><strong>∞</strong><span>POSSIBILITIES</span></div>
+  <div class="stat"><strong>06</strong><span>RANDOM PORTALS</span></div>
+  <div class="stat"><strong id="count">000</strong><span>EXPLORATIONS</span></div>
+</section>
+<section class="tools" id="tools">
+  <div class="section-head reveal"><div class="eyebrow">SELECT YOUR DESTINATION</div><h2>CHOOSE A <span class="gradient">PORTAL.</span></h2><p>Every click opens a new little universe. Nothing too serious.</p></div>
+  <div class="tool-grid">
+    <article class="card reveal" id="ideaCard"><div class="icon">✦</div><h3>Random Ideas</h3><p>Give your brain a new side quest.</p><div class="result" id="idea">Waiting for a signal...</div><button class="tool-btn" data-action="idea">GENERATE IDEA ↗</button></article>
+    <article class="card reveal"><div class="icon">◈</div><h3>Would You Rather?</h3><p>Two options. Pick your reality.</p><div class="result" id="choice">Ready for a difficult choice?</div><button class="tool-btn" data-action="choice">OPEN PORTAL ↗</button></article>
+    <article class="card reveal"><div class="icon">◉</div><h3>Cosmic Coin</h3><p>Let the universe make a harmless decision.</p><div class="result" id="coin">HEADS OR TAILS?</div><button class="tool-btn" data-action="coin">FLIP COIN ↗</button></article>
+    <article class="card reveal"><div class="icon">⌗</div><h3>Number Generator</h3><p>Choose a range and get a random number.</p><div class="result" id="number">Awaiting coordinates...</div><input class="number-input" id="min" type="number" value="1" aria-label="Minimum number"><input class="number-input" id="max" type="number" value="100" aria-label="Maximum number"><button class="tool-btn" data-action="number">GENERATE</button></article>
+    <article class="card reveal"><div class="icon">✧</div><h3>Unknown Facts</h3><p>Unexpected facts from planet Earth.</p><div class="result" id="fact">Accessing the universe...</div><button class="tool-btn" data-action="fact">REVEAL FACT ↗</button></article>
+    <article class="card reveal"><div class="icon">⌁</div><h3>Random Joke</h3><p>Proceed with extremely questionable humor.</p><div class="result" id="joke">Humor module ready.</div><button class="tool-btn" data-action="joke">MAKE ME LAUGH ↗</button></article>
+  </div>
+</section>
+</main>
+<footer>VOID 4.0 // BUILT FOR THE <span>CURIOUS.</span></footer>
+<div id="warp"><div class="warp-text">ENTERING WORMHOLE<small>REALITY SHIFT IN PROGRESS</small></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script type="module">
+import * as THREE from 'three';
+
+const $ = (id) => document.getElementById(id);
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobile = () => window.innerWidth < 800;
+
+// ----- Random portal content -----
+const data = {
+ idea:["Learn five Japanese words today.","Make a tiny pixel-art character.","Build a one-page website about a weird topic.","Create a playlist for your future self.","Draw something without looking at the paper.","Write a 100-word story with a plot twist.","Learn a new keyboard shortcut.","Make a meme about your day.","Try a game you have never played.","Design a logo for an imaginary company."],
+ choice:["Explore a distant galaxy OR explore the deepest ocean?","Pause time OR teleport anywhere?","Have a personal robot OR a tiny spaceship?","Know every language OR play every instrument?","Live in a futuristic city OR a quiet forest cabin?","Visit the past OR see one day in the future?"],
+ fact:["Octopuses have three hearts.","A day on Venus is longer than its year.","Sharks existed before trees.","Bananas are botanically classified as berries.","The Moon is slowly moving away from Earth.","A group of flamingos is called a flamboyance.","Some species of bamboo can grow very quickly.","Light from the Sun takes about eight minutes to reach Earth."],
+ joke:["Why did the computer get cold? It left its Windows open.","Why was the math book stressed? Too many problems.","What do you call a sleeping dinosaur? A dino-snore.","Why did the phone wear glasses? It lost its contacts.","I told my computer I needed a break. It froze.","Why did the web developer go broke? Too many cache problems."]
+};
+let explorations = 0;
+function pick(list){return list[Math.floor(Math.random()*list.length)];}
+function showResult(id,text){const el=$(id);el.classList.remove('flash');void el.offsetWidth;el.textContent=text;el.classList.add('flash');explorations++;$('count').textContent=String(explorations).padStart(3,'0');}
+function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2200);}
+function doAction(action){
+ if(action==='idea')showResult('idea',pick(data.idea));
+ if(action==='choice')showResult('choice',pick(data.choice));
+ if(action==='coin')showResult('coin',Math.random()<.5?'HEADS!':'TAILS!');
+ if(action==='fact')showResult('fact',pick(data.fact));
+ if(action==='joke')showResult('joke',pick(data.joke));
+ if(action==='number'){
+  const a=$('min').value.trim(),b=$('max').value.trim(),min=Number(a),max=Number(b);
+  if(a===''||b===''||!Number.isSafeInteger(min)||!Number.isSafeInteger(max)||min>max||max-min>1000000000){showResult('number','Invalid range. Check both numbers.');return;}
+  showResult('number',(Math.floor(Math.random()*(max-min+1))+min).toLocaleString());
+ }
+}
+let portalBusy=false;
+function portal(action){if(portalBusy)return;portalBusy=true;$('warp').classList.add('active');setTimeout(()=>doAction(action),450);setTimeout(()=>{$('warp').classList.remove('active');portalBusy=false;},1050);}
+document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>portal(btn.dataset.action)));
+$('surpriseBtn').addEventListener('click',()=>{const action=pick(['idea','choice','coin','fact','joke']);portal(action);$('tools').scrollIntoView({behavior:'smooth'});});
+
+// ----- 3D scene -----
+const stage=$('stage');
+let renderer,scene,camera,holeRig,diskParticles,starField,smallOrbiters;
+let lowFx=false,dragging=false,lastX=0,lastY=0;
+let targetRotY=0,targetRotX=-.25;
+let pointerNorm={x:0,y:0};
+const clock=new THREE.Clock();
+
+function makeGlowTexture(){
+ const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
+ const c=canvas.getContext('2d');const g=c.createRadialGradient(64,64,2,64,64,64);
+ g.addColorStop(0,'rgba(217,169,255,.8)');g.addColorStop(.18,'rgba(160,91,255,.3)');g.addColorStop(1,'rgba(120,60,255,0)');
+ c.fillStyle=g;c.fillRect(0,0,128,128);return new THREE.CanvasTexture(canvas);
+}
+function makeDiskMaterial(){
+ return new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,uniforms:{uTime:{value:0}},
+ vertexShader:`varying vec2 vP; void main(){vP=position.xy; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+ fragmentShader:`uniform float uTime; varying vec2 vP; void main(){float r=length(vP);float a=atan(vP.y,vP.x);float edge=smoothstep(1.02,1.28,r)*(1.0-smoothstep(2.38,2.66,r));float bands=.55+.45*sin(a*25.0-r*12.0-uTime*2.8);float turbulence=.78+.22*sin(a*47.0+r*19.0+uTime*1.7);vec3 purple=vec3(.34,.12,.95);vec3 magenta=vec3(.95,.38,.92);vec3 ice=vec3(.72,.58,1.0);float heat=smoothstep(1.15,2.0,r);vec3 color=mix(ice, mix(magenta,purple,heat),.62);float alpha=edge*(.28+.58*bands)*turbulence;gl_FragColor=vec4(color*(.8+bands*.8),alpha);}`});
+}
+function init3D(){
+ try{
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(42,stage.clientWidth/stage.clientHeight,.1,100);
+  camera.position.set(0,2.2,9.5);camera.lookAt(0,0,0);
+  renderer=new THREE.WebGLRenderer({alpha:true,antialias:false,powerPreference:'low-power'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
+  renderer.setSize(stage.clientWidth,stage.clientHeight);
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.15;
+  renderer.domElement.setAttribute('aria-label','Interactive 3D black hole. Drag to rotate.');
+  stage.prepend(renderer.domElement);
+
+  // Deep-space star field
+  const starCount=1100,positions=new Float32Array(starCount*3),colors=new Float32Array(starCount*3);
+  for(let i=0;i<starCount;i++){
+   const radius=THREE.MathUtils.randFloat(12,34),theta=Math.random()*Math.PI*2,phi=Math.acos(THREE.MathUtils.randFloatSpread(2));
+   positions[i*3]=radius*Math.sin(phi)*Math.cos(theta);positions[i*3+1]=radius*Math.cos(phi);positions[i*3+2]=radius*Math.sin(phi)*Math.sin(theta);
+   const tint=Math.random();colors[i*3]=.55+tint*.35;colors[i*3+1]=.42+tint*.27;colors[i*3+2]=.85+tint*.15;
+  }
+  const starGeo=new THREE.BufferGeometry();starGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));starGeo.setAttribute('color',new THREE.BufferAttribute(colors,3));
+  starField=new THREE.Points(starGeo,new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,depthWrite:false}));scene.add(starField);
+
+  holeRig=new THREE.Group();scene.add(holeRig);
+  const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:makeGlowTexture(),transparent:true,opacity:.72,blending:THREE.AdditiveBlending,depthWrite:false}));glow.scale.set(8,8,1);glow.position.z=-.65;holeRig.add(glow);
+
+  // Accretion disk: animated radial shader over a low-cost ring mesh
+  const diskGeo=new THREE.RingGeometry(1.08,2.65,180,8);
+  const disk=new THREE.Mesh(diskGeo,makeDiskMaterial());disk.rotation.x=-.22;holeRig.add(disk);holeRig.userData.diskMaterial=disk.material;
+
+  // Fine glowing orbit lines
+  for(let i=0;i<4;i++){
+   const ring=new THREE.Mesh(new THREE.TorusGeometry(1.12+i*.37,.008+(i%2)*.006,5,120),new THREE.MeshBasicMaterial({color:i%2?0x8d58ff:0xe5a5ff,transparent:true,opacity:.28-i*.035}));
+   ring.rotation.x=-.22+(i-1.5)*.018;holeRig.add(ring);
+  }
+
+  // Event horizon
+  const horizon=new THREE.Mesh(new THREE.SphereGeometry(1.02,48,32),new THREE.MeshStandardMaterial({color:0x010008,roughness:.2,metalness:.45}));holeRig.add(horizon);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(1.035,.025,8,96),new THREE.MeshBasicMaterial({color:0xb77cff,transparent:true,opacity:.65,blending:THREE.AdditiveBlending}));rim.rotation.x=-.22;holeRig.add(rim);
+
+  // Dust orbiting in the accretion plane
+  const dustCount=1400,dustPos=new Float32Array(dustCount*3),dustColor=new Float32Array(dustCount*3),dustMeta=[];
+  for(let i=0;i<dustCount;i++){
+   const angle=Math.random()*Math.PI*2,r=THREE.MathUtils.randFloat(1.18,2.7),z=THREE.MathUtils.randFloatSpread(.12);
+   dustPos[i*3]=Math.cos(angle)*r;dustPos[i*3+1]=Math.sin(angle)*r;dustPos[i*3+2]=z;
+   const t=Math.random();dustColor[i*3]=.65+t*.35;dustColor[i*3+1]=.28+t*.38;dustColor[i*3+2]=.95;
+   dustMeta.push({angle,r,z,speed:(.18/r)*(.65+Math.random()*.8)});
+  }
+  const dustGeo=new THREE.BufferGeometry();dustGeo.setAttribute('position',new THREE.BufferAttribute(dustPos,3));dustGeo.attributes.position.setUsage(THREE.DynamicDrawUsage);dustGeo.setAttribute('color',new THREE.BufferAttribute(dustColor,3));
+  diskParticles=new THREE.Points(dustGeo,new THREE.PointsMaterial({size:.025,vertexColors:true,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));diskParticles.rotation.x=-.22;holeRig.add(diskParticles);diskParticles.userData.meta=dustMeta;
+
+  // A few distant orbiters
+  smallOrbiters=new THREE.Group();holeRig.add(smallOrbiters);
+  for(let i=0;i<3;i++){
+   const orb=new THREE.Mesh(new THREE.SphereGeometry(.045+i*.012,10,8),new THREE.MeshBasicMaterial({color:i===1?0xf3c5ff:0x9f7bff}));
+   orb.userData={angle:i*2.1,radius:3.1+i*.35,speed:.24+i*.07};smallOrbiters.add(orb);
+  }
+
+  // Set the scene slightly to the right on wide screens, centered on phones
+  positionRig();
+  $('loader').classList.add('done');
+  animate();
+ }catch(error){
+  console.error('3D scene could not initialize:',error);
+  $('loader').classList.add('done');
+  toast('3D graphics unavailable. Try updating your browser.');
+ }
+}
+function positionRig(){if(!holeRig)return;holeRig.position.x=isMobile()?0:1.05;holeRig.position.y=isMobile()?-.15:0;}
+function animate(){
+ if(!renderer)return;
+ requestAnimationFrame(animate);
+ if(document.hidden)return;
+ const t=clock.getElapsedTime();
+ holeRig.rotation.y+=(targetRotY-holeRig.rotation.y)*.035;
+ holeRig.rotation.x+=(targetRotX-holeRig.rotation.x)*.035;
+ holeRig.rotation.z=Math.sin(t*.18)*.035;
+ holeRig.userData.diskMaterial.uniforms.uTime.value=t;
+ diskParticles.rotation.z=t*.035;
+ const arr=diskParticles.geometry.attributes.position.array,meta=diskParticles.userData.meta;
+ const stride=lowFx?4:1;
+ for(let i=0;i<meta.length;i+=stride){const p=meta[i];p.angle+=p.speed*.012;arr[i*3]=Math.cos(p.angle)*p.r;arr[i*3+1]=Math.sin(p.angle)*p.r;arr[i*3+2]=p.z+Math.sin(t*1.5+p.angle*3)*.012;}
+ diskParticles.geometry.attributes.position.needsUpdate=true;
+ smallOrbiters.children.forEach(o=>{o.userData.angle+=o.userData.speed*.006;o.position.set(Math.cos(o.userData.angle)*o.userData.radius,Math.sin(o.userData.angle*1.7)*.12,Math.sin(o.userData.angle)*o.userData.radius*.34);});
+ starField.rotation.y=t*.004;starField.rotation.x=Math.sin(t*.08)*.018;
+ renderer.render(scene,camera);
+}
+function resize3D(){if(!renderer||!camera)return;const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);positionRig();}
+
+// Mouse movement gives the black hole a slight parallax. Dragging adds orbit control.
+stage.addEventListener('pointermove',e=>{
+ const r=stage.getBoundingClientRect(),nx=(e.clientX-r.left)/r.width,ny=(e.clientY-r.top)/r.height;
+ $('coordX').textContent=String(Math.round((nx-.5)*200)).padStart(3,'0');$('coordY').textContent=String(Math.round((ny-.5)*200)).padStart(3,'0');
+ if(dragging){targetRotY+=(e.clientX-lastX)*.006;targetRotX+=(e.clientY-lastY)*.003;targetRotX=THREE.MathUtils.clamp(targetRotX,-.8,.35);}
+ else{targetRotY=(nx-.5)*.38;targetRotX=-.25+(ny-.5)*.16;}
+ lastX=e.clientX;lastY=e.clientY;
+});
+stage.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'){dragging=true;lastX=e.clientX;lastY=e.clientY;stage.setPointerCapture(e.pointerId);}});
+stage.addEventListener('pointerup',()=>dragging=false);stage.addEventListener('pointercancel',()=>dragging=false);
+
+// Low-effects mode reduces rendered stars and dust updates for modest laptops.
+$('qualityBtn').addEventListener('click',()=>{
+ lowFx=!lowFx;$('qualityBtn').textContent=lowFx?'LOW FX: ON':'LOW FX: OFF';$('qualityBtn').classList.toggle('active',lowFx);
+ if(starField)starField.geometry.setDrawRange(0,lowFx?330:1100);
+ if(diskParticles)diskParticles.geometry.setDrawRange(0,lowFx?430:1400);
+ if(renderer){renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,lowFx?1:1.35));resize3D();}
+ toast(lowFx?'Performance mode enabled':'Full visual effects restored');
+});
+
+// Optional ambient drone. Audio starts only after the user presses the button.
+let audioCtx=null,oscillators=[],masterGain=null,audioOn=false;
+async function toggleSound(){
+ try{
+  if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();masterGain=audioCtx.createGain();masterGain.gain.value=0;masterGain.connect(audioCtx.destination);
+   [55,82.41,110].forEach((freq,i)=>{const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type=i===1?'triangle':'sine';osc.frequency.value=freq;gain.gain.value=i===0?.36:.16;osc.connect(gain);gain.connect(masterGain);osc.start();oscillators.push(osc);});
+  }
+  await audioCtx.resume();audioOn=!audioOn;masterGain.gain.cancelScheduledValues(audioCtx.currentTime);masterGain.gain.setTargetAtTime(audioOn?.045:0,audioCtx.currentTime,.25);
+  $('soundBtn').textContent=audioOn?'SOUND: ON':'SOUND: OFF';$('soundBtn').classList.toggle('active',audioOn);toast(audioOn?'Ambient sound enabled':'Ambient sound muted');
+ }catch(error){toast('Audio is not available in this browser');}
+}
+$('soundBtn').addEventListener('click',toggleSound);
+
+// Little easter egg: click the VOID logo seven times or type V O I D.
+let logoClicks=0,logoTimer;
+function secret(){document.body.classList.toggle('secret-mode');toast(document.body.classList.contains('secret-mode')?'SECRET DIMENSION UNLOCKED':'SECRET DIMENSION CLOSED');}
+$('brand').addEventListener('click',()=>{logoClicks++;clearTimeout(logoTimer);if(logoClicks>=7){secret();logoClicks=0;}else{logoTimer=setTimeout(()=>logoClicks=0,1800);}});
+let keyTrail='';window.addEventListener('keydown',e=>{if(e.key.length===1){keyTrail=(keyTrail+e.key.toLowerCase()).slice(-4);if(keyTrail==='void'){secret();keyTrail='';}}});
+
+// Scroll reveal + top progress + cursor light
+const revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');revealObserver.unobserve(entry.target);}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight;$('progress').style.width=(max>0?scrollY/max*100:0)+'%';},{passive:true});
+window.addEventListener('pointermove',e=>{$('cursor-glow').style.left=e.clientX+'px';$('cursor-glow').style.top=e.clientY+'px';},{passive:true});
+window.addEventListener('resize',resize3D);
+window.addEventListener('pagehide',()=>{if(renderer)renderer.dispose();if(audioCtx&&audioCtx.state!=='closed')audioCtx.close();});
+
+init3D();
+</script>
+</body>
+</html>
